@@ -1,6 +1,5 @@
 #******************************************************************************#
 #* This script was used to analyze changes in bird counts in China before, during and after the pandemic 
-#* Bird counts are compared before and during the pandemic, and during and after the pandemic, respectively. 
 #* It consists of the following three main parts:
 #*     1. eBird data cleaning
 #*     2. GLMM
@@ -210,8 +209,6 @@ glimpse(zf_drop0)
 # write.csv(zf_drop0, "data/observations.csv", row.names = FALSE)
 
 # Subsetting checklists ---------------------------------------------------
-
-# Spatial functions
 library(dggridR) # Creating Hexagonal grid
 library(sf) # for gis functions
 
@@ -234,7 +231,6 @@ sed_subset <- sed_unique %>%
 glimpse(sed_subset)
 
 # Spatial subsample -------------------------------------------------------
-
 # Creates a hexagonal grid and samples an equal number of checklists (up to a pre-defined max) from each cell.
 # First, generate hexagonal grid with ~ 3 km between cells
 dggs <- dgconstruct(spacing = 3)
@@ -310,9 +306,7 @@ SpatialSubsample <- function(dat, thresh) {
 
 # Set the random seed, so that this next step is reproducible:
 set.seed(22)
-# tt <- proc.time() # For run time, later
 selection <- SpatialSubsample(dat = checklists_f, thresh = 1000)
-# run_time <- (proc.time()[3] - tt[3]) / 60 # Run time in minutes
 glimpse(selection)
 
 checklists_sample <- checklists_f %>% filter(checklist_id %in% selection)
@@ -462,7 +456,6 @@ SpeciesPrep_1000 <- function(species) {
 
 
 # Model data prep --------------------------------------------------------------
-
 library(tidyverse)
 library(lubridate)
 
@@ -524,7 +517,6 @@ glimpse(checklists3)
 
 
 # Prep Function 
-
 checklists3_select <- checklists3 %>% 
   select(checklist_id, day_of_year, c_delta_traffic, air, road, land)
 glimpse(checklists3_select)
@@ -575,7 +567,6 @@ glimpse(dat_full)
 # write_csv(dat_full, path = "CN_dat_full_delta_traf_centered.csv")
 
 
-
 # species filtering
 species_counts <- dat_full %>% 
   group_by(sp) %>% 
@@ -597,10 +588,8 @@ glimpse(dat_full_filter)
 # write_csv(dat_full_filter, path = "CN_dat_full_filter_delta_traf_centered.csv")
 
 # Running Model -----------------------------------------------------------
-
 setwd("D:/RWork/COVID_19")
 getwd()
-
 
 # libraries
 library(dplyr)
@@ -670,8 +659,6 @@ library(bayesplot)
 # Set directories 
 mod_dir <- "D:/RWork/COVID_19/model_output_V4"
 
-
-
 # Species List 
 sp_list <- read.csv("CN_species_family_order_unique.csv") %>% 
   mutate(band_code = species_code) %>% 
@@ -686,11 +673,9 @@ sp_list
 pars <- c("dist",
           "dur",
           "pandemic",
-          "delta_traf",
           "air",
           "road",
           "land",
-          "pandemic:delta_traf",
           "pandemic:air",
           "pandemic:road",
           "pandemic:land",
@@ -755,7 +740,6 @@ glimpse(post_summary2)
 
 
 # Function to plot all interaction CIs and medians, ordered by family and common name---------
-
 PostSumBW <- function(trm) {
   # Extract data
   dat <- post_summary2 %>%
@@ -865,12 +849,6 @@ PostSumBW <- function(trm) {
 
 
 # plot and export
-
-# stringency
-png("D:/RWork/COVID_19/Figure_PostSum_Before_During/delta_traf_order.png", width=6, height=10, res=600, units="in") 
-PostSumBW(trm = "delta_traf")
-dev.off()
-
 # air
 png("D:/RWork/COVID_19/Figure_PostSum_Before_During/air_order.png", width=6, height=10, res=600, units="in") 
 PostSumBW(trm = "air")
